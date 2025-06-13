@@ -9,7 +9,7 @@ import os
 st.title("내부 경로에서 FITS (.fz) 파일 불러와 시각화")
 
 # 상대 경로 지정
-file_path = "finalproject/k21i_100108_031209_ori.fits.fz"
+file_path = "https://github.com/bgkim89/finalproject/blob/main/k21i_100108_031209_ori.fits.fz"
 
 # 파일 존재 여부 확인
 if not os.path.exists(file_path):
