@@ -1,29 +1,24 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 from astropy.io import fits
+import matplotlib.pyplot as plt
 import numpy as np
-import gzip
 import io
 import requests
 
-st.title("GitHub에서 FITS (.fz) 파일 시각화")
+st.title("GitHub에서 .fz (Tile-compressed FITS) 파일 불러오기 및 시각화")
 
-# GitHub Raw URL (고정)
+# GitHub Raw URL (.fz 파일)
 url = "https://raw.githubusercontent.com/bgkim89/finalproject/main/0613.fz"
 
 try:
-    st.info(f"FITS 파일을 다음 URL에서 불러옵니다:\n{url}")
+    st.info(f"다음 경로에서 파일을 불러옵니다:\n{url}")
 
-    # GitHub에서 .fz 파일 다운로드
+    # GitHub에서 파일 다운로드
     response = requests.get(url)
     response.raise_for_status()
 
-    # .fz (gzip) 압축 해제
-    with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as f:
-        decompressed_data = f.read()
-
-    # FITS 데이터 읽기
-    with fits.open(io.BytesIO(decompressed_data)) as hdul:
+    # .fz 파일을 astropy로 직접 열기
+    with fits.open(io.BytesIO(response.content)) as hdul:
         st.write("📄 FITS 헤더 정보:")
         st.text(hdul.info())
 
@@ -31,11 +26,9 @@ try:
 
         if data is not None:
             st.write(f"데이터 shape: {data.shape}")
-
-            # 이미지 시각화
             fig, ax = plt.subplots()
-            ax.imshow(data, cmap="gray", origin="lower", aspect="auto")
-            ax.set_title("FITS 이미지 (0613.fz)")
+            ax.imshow(data, cmap='gray', origin='lower', aspect='auto')
+            ax.set_title('FITS 이미지 (tile-compressed .fz)')
             st.pyplot(fig)
         else:
             st.warning("FITS 파일에 이미지 데이터가 없습니다.")
